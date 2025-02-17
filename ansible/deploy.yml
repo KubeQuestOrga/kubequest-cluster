@@ -1,0 +1,21 @@
+- hosts: nodes-master
+  become: yes
+  tasks:
+    # CLUSTER_K3S_TOKEN est une variable d'environnement passer via Github Actions
+    - name: Installation de K3s et enregistrement des noeuds master au cluster
+      shell: >
+        curl -sfL https://get.k3s.io | K3S_TOKEN={{ CLUSTER_K3S_TOKEN }} sh -s - server
+        --server https://cluster-k3s.crzcommon.com:6443
+        --disable traefik
+        --node-taint CriticalAddonsOnly=true:NoExecute
+        --tls-san cluster-k3s.crzcommon.com
+      # --disable servicelb
+
+- hosts: nodes-worker
+  become: yes
+  tasks:
+    # CLUSTER_K3S_TOKEN est une variable d'environnement passer via Github Actions
+    - name: Installation de K3s et enregistrement des noeuds worker au cluster
+      shell: >
+        curl -sfL https://get.k3s.io | K3S_TOKEN={{ CLUSTER_K3S_TOKEN }} sh -s - agent
+        --server https://cluster-k3s.crzcommon.com:6443
