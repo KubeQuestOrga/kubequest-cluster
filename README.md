@@ -1,4 +1,4 @@
-# Flapi - Cluster K3s - High Availability 
+# KubeQuest - Cluster K3s - High Availability 
 
 ## 🛠 Tech Stack
 
@@ -178,7 +178,7 @@ sudo k3s server \
 sudo systemctl stop k3s
 sudo rm -rf /var/lib/rancher/k3s/server/db/
 ```
-3. Sur le premier nœud (Sever1), redémarrez K3s :
+3. Sur le premier nœud (Server1), redémarrez K3s :
 ```bash
 sudo systemctl start k3s
 ```
