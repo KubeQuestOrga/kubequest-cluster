@@ -82,14 +82,7 @@ curl -sfL https://get.k3s.io | K3S_TOKEN=xxx sh -s - server --server https://clu
 curl -sfL https://get.k3s.io | K3S_TOKEN=xxx sh -s - agent --server https://cluster-k3s.crzcommon.com:6443
 ```
 
-#### 5. Après avoir rejoindre SI JAMAIS il y a une erreur
-`ATTENTION`: Si vous avez l'erreur ci-dessous, il est possible que le noeud vas quand même rejoindre patienter jusqu'a 5min.
-```bash
-Job for k3s.service failed because the control process exited with error code.
-See "systemctl status k3s.service" and "journalctl -xeu k3s.service" for details.
-```
-
-#### 6. Configuration Système et Conseils
+#### 5. Configuration Système et Conseils
 - **Désactiver le Swap (vps pas possible)** : Important pour les performances et la stabilité de Kubernetes.
 - **Nombre Impair de Nœuds Master** : Nécessaire pour maintenir le quorum en cas de panne.
 - **Noms d'Hôtes Uniques** : Chaque nœud dans le cluster doit avoir un nom d'hôte unique.
@@ -116,8 +109,8 @@ sudo kubectl get node -o wide
 
 #### Un cluster HA K3s avec etcd intégré est composé de :
 - Trois nœuds de serveur ou plus qui serviront l'API Kubernetes et exécuteront d'autres services de plan de contrôle, ainsi qu'hébergeront la banque de données etcd intégrée. 
-- Facultatif : zéro ou plusieurs nœuds d'agent désignés pour exécuter vos applications et services
-- Facultatif : une adresse d'enregistrement fixe (load balancer) pour que les nœuds d'agent / worker s'inscrivent auprès du cluster (Voir le projet : https://github.com/CrzGames/Crzgames_LoadBalancer_External)
+- Facultatif : zéro ou plusieurs nœuds worker désignés pour exécuter vos applications et services
+- Facultatif : une adresse d'enregistrement fixe (load balancer) pour que les nœuds master / worker s'inscrivent auprès du cluster, ainsi que l'API Kubernetes (Voir le projet : https://github.com/KubeQuestOrga/kubequest-cluster-loadbalancer-external)
 
 <br /><br />
 
@@ -194,12 +187,10 @@ sudo systemctl start k3s
 ### ⚙️➡️ Processus de distribution automatique (CI / CD)
 #### Configuration Initiale pour un Nouveau Projet
 
-1. **Créer le Cluster K3S**: Il faudra au préalable avoir crée manuellement le cluster K3S, voir tout en haut du fichier 'README.md' pour plus de détails.
+1. **Créer le Cluster K3S**: Il faudra au préalable avoir crée manuellement le cluster K3S, voir tout en haut du fichier `README.md` pour plus de détails.
 
 2. **Configuration des secrets GitHub**:
-
    Pour la configuration initiale, assurez-vous d'ajouter les secrets suivants dans votre dépôt GitHub :
-
    - `CLUSTER_SSH_PRIVATE_KEY`: Votre clé privée SSH. Cette clé doit correspondre à la clé publique déjà installée sur les serveurs cibles.
    - `CLUSTER_SSH_HOSTS`: Les adresses IP des serveurs cibles, séparées par des espaces. <br />
    Exemple : `192.0.2.1 198.51.100.2`. Ces adresses seront utilisées pour préparer le fichier `known_hosts`, facilitant ainsi des connexions SSH sécurisées.
@@ -209,5 +200,4 @@ sudo systemctl start k3s
     ```
 
 3. **Ajout de la clé publique sur les serveurs cibles**:
-
    Avant de pouvoir déployer automatiquement via CI/CD, la clé publique associée à `CLUSTER_SSH_PRIVATE_KEY` doit être ajoutée au fichier `~/.ssh/authorized_keys` sur chaque serveur cible. Cette étape garantit que GitHub Actions peut se connecter aux serveurs via SSH sans intervention manuelle.
